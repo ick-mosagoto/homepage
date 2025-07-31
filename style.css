@@ -23,13 +23,13 @@ h3 {
 
 .caption-box {
     border: 2px solid orange;
-    padding: 10px;
+    padding: 6px;
     margin-top: 10px;
     width: 80%;
     background-color: #f9f9f9;
     border-radius: 8px;
-    font-size: 16px;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.4;
     text-align: left;
 }
 
