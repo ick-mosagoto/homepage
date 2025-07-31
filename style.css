@@ -32,3 +32,14 @@ h3 {
     line-height: 1.6;
     text-align: left;
 }
+
+pre code {
+    background-color: #f4f4f4; /* 背景色 */
+    border: 1px solid #ccc;    /* 枠線 */
+    border-radius: 5px;        /* 角丸 */
+    padding: 10px;
+    display: block;
+    white-space: pre;          /* 改行やスペースをそのまま表示 */
+    overflow-x: auto;          /* 横スクロール可 */
+    font-family: Consolas, Monaco, monospace; /* 等幅フォント */
+}

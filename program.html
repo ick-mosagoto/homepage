@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>プログラムページ</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>プログラムの総覧です</h1>
+        <p>①ボタンを押すとLEDが順番に光る回路</p>
+        <div class="caption-box">
+            <pre><code>
+                int ledPin = 5;             // LED ピン
+                int buttonApin = 9;         // カウントアップボタン
+                int buttonBpin = 8;         // カウントダウンボタン
+                int buttonCpin = 7;         // カウントリセットボタン
+
+                int count = 0;              // カウント変数
+                const int targetCount = 5;  // LEDを点灯させるカウントのしきい値
+
+                bool buttonAWasPressed = false;
+                bool buttonBWasPressed = false;
+                bool buttonCWasPressed = false;
+
+                void setup() {
+                pinMode(ledPin, OUTPUT);
+                pinMode(buttonApin, INPUT_PULLUP);
+                pinMode(buttonBpin, INPUT_PULLUP);
+                pinMode(buttonCpin, INPUT_PULLUP);
+                }
+
+                void loop() {
+                bool buttonAState = digitalRead(buttonApin) == LOW;
+                bool buttonBState = digitalRead(buttonBpin) == LOW;
+                bool buttonCState = digitalRead(buttonCpin) == LOW;
+
+                if (buttonAState && !buttonAWasPressed) {
+                    count++;
+                    buttonAWasPressed = true;
+                }
+                if (!buttonAState) buttonAWasPressed = false;
+
+                if (buttonBState && !buttonBWasPressed) {
+                    if (count > 0) count--;
+                    buttonBWasPressed = true;
+                }
+                if (!buttonBState) buttonBWasPressed = false;
+
+                if (buttonCState && !buttonCWasPressed) {
+                    count = 0;
+                    buttonCWasPressed = true;
+                }
+                if (!buttonCState) buttonCWasPressed = false;
+
+                if (count >= targetCount) {
+                    digitalWrite(ledPin, HIGH);
+                } else {
+                    digitalWrite(ledPin, LOW);
+                }
+
+                delay(20);
+                }
+                </code></pre>
+        </div>
+    </body>
+</html>
