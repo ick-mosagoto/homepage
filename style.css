@@ -16,6 +16,11 @@ h2 {
 
 }
 
+h3 {
+    color: antiquewhite;
+    background-color: black;
+}
+
 .caption-box {
     border: 2px solid orange;
     padding: 10px;
