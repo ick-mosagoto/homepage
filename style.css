@@ -1,6 +1,10 @@
 body {
     font-weight: bolder;
     font-family: system-ui;
+    background-image: url('1837111692-beauty_matrix_2023_0912_pc_wallpaper_1920_kabekin-GRv8-1920x1080-MM-100.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 h1 {
