@@ -24,6 +24,11 @@ h3 {
     background-color: black;
 }
 
+p {
+    color: white;
+    background-color: black;
+}
+
 .caption-box {
     border: 2px solid orange;
     padding: 6px;
