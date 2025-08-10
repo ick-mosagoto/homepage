@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>プログラムページ</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>②LED応用回路その1</h1>
+        <div class="caption-box">
+            <pre><code>
+                int led1Pin = 11;          
+                int led2Pin = 12;          
+                int led3Pin = 13;  
+                int led4Pin = 5;          
+                int led5Pin = 6;          
+                int led6Pin = 7;  
+                int buttonApin = 4;       // カウントアップ1
+                int buttonBpin = 3;       // リセット
+                int buttonCpin = 2;       // カウントアップ2
+
+
+                int count1 = 0;
+                int count2 = 0;
+                const int MAX_COUNT = 3;
+
+
+                bool buttonAWasPressed = false;
+                bool buttonBWasPressed = false;
+                bool buttonCWasPressed = false;
+
+                void setup() {
+                pinMode(led1Pin, OUTPUT);
+                pinMode(led2Pin, OUTPUT);
+                pinMode(led3Pin, OUTPUT);
+                pinMode(led4Pin, OUTPUT);
+                pinMode(led5Pin, OUTPUT);
+                pinMode(led6Pin, OUTPUT);
+                pinMode(buttonApin, INPUT_PULLUP);
+                pinMode(buttonBpin, INPUT_PULLUP);
+                pinMode(buttonCpin, INPUT_PULLUP);
+                }
+
+                void loop() {
+                bool buttonAState = digitalRead(buttonApin) == LOW;
+                bool buttonBState = digitalRead(buttonBpin) == LOW;
+                bool buttonCState = digitalRead(buttonCpin) == LOW;
+
+                // カウントアップ1
+                if (buttonAState && !buttonAWasPressed) {
+                    if (count2 < MAX_COUNT && count1 < MAX_COUNT) {
+                    count1++;
+                    }
+                    buttonAWasPressed = true;
+                }
+                if (!buttonAState) buttonAWasPressed = false;
+
+                // カウントアップ2
+                if (buttonCState && !buttonCWasPressed) {
+                    if (count1 < MAX_COUNT && count2 < MAX_COUNT) {
+                    count2++;
+                }
+                    buttonCWasPressed = true;
+                }
+                if (!buttonCState) buttonCWasPressed = false;
+
+                // カウントリセット
+                if (buttonBState && !buttonBWasPressed) {
+                    count1 = 0;
+                    count2 = 0;
+                    buttonBWasPressed = true;
+                }
+                if (!buttonBState) buttonBWasPressed = false;
+
+                // LED1: カウントが1, 2, 3のとき点灯
+                if (count1 >= 1 && count1 <= 3) {
+                digitalWrite(led1Pin, HIGH);
+                } else {
+                digitalWrite(led1Pin, LOW);
+                }
+
+                // LED2: カウントが2, 3のとき点灯
+                if (count1 == 2 || count1 == 3) {
+                digitalWrite(led2Pin, HIGH);
+                } else {
+                digitalWrite(led2Pin, LOW);
+                }
+
+                // LED3: カウントが3のときだけ点灯
+                if (count1 == 3) {
+                digitalWrite(led3Pin, HIGH);
+                } else {
+                digitalWrite(led3Pin, LOW);
+                }
+
+                // LED4: カウントが1, 2, 3のとき点灯
+                if (count2 >= 1 && count2 <= 3) {
+                digitalWrite(led4Pin, HIGH);
+                } else {
+                digitalWrite(led4Pin, LOW);
+                }
+
+                // LED5: カウントが2, 3のとき点灯
+                if (count2 == 2 || count2 == 3) {
+                digitalWrite(led5Pin, HIGH);
+                } else {
+                digitalWrite(led5Pin, LOW);
+                }
+
+                // LED6: カウントが3のときだけ点灯
+                if (count2 == 3) {
+                digitalWrite(led6Pin, HIGH);
+                } else {
+                digitalWrite(led6Pin, LOW);
+                }
+                }
+
+            </code></pre>
+        </div>
+
+        <button onclick="location.href='app.html'">戻る</button>
+    </body>
+</html>
