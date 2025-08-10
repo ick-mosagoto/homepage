@@ -10,20 +10,23 @@
         <p>①ボタンを押すとLEDが順番に光る回路</p>
         <div class="caption-box">
             <pre><code>
-                int ledPin = 5;             // LED ピン
-                int buttonApin = 9;         // カウントアップボタン
-                int buttonBpin = 8;         // カウントダウンボタン
-                int buttonCpin = 7;         // カウントリセットボタン
+                int led1Pin = 5;          
+                int led2Pin = 6;          
+                int led3Pin = 7;  
+                int buttonApin = 4;       // カウントアップ
+                int buttonBpin = 3;       // カウントダウン
+                int buttonCpin = 2;       // リセット
 
-                int count = 0;              // カウント変数
-                const int targetCount = 5;  // LEDを点灯させるカウントのしきい値
+                int count = 0;
 
                 bool buttonAWasPressed = false;
                 bool buttonBWasPressed = false;
                 bool buttonCWasPressed = false;
 
                 void setup() {
-                pinMode(ledPin, OUTPUT);
+                pinMode(led1Pin, OUTPUT);
+                pinMode(led2Pin, OUTPUT);
+                pinMode(led3Pin, OUTPUT);
                 pinMode(buttonApin, INPUT_PULLUP);
                 pinMode(buttonBpin, INPUT_PULLUP);
                 pinMode(buttonCpin, INPUT_PULLUP);
@@ -34,33 +37,50 @@
                 bool buttonBState = digitalRead(buttonBpin) == LOW;
                 bool buttonCState = digitalRead(buttonCpin) == LOW;
 
+                // カウントアップ
                 if (buttonAState && !buttonAWasPressed) {
                     count++;
                     buttonAWasPressed = true;
                 }
                 if (!buttonAState) buttonAWasPressed = false;
 
+                // カウントダウン
                 if (buttonBState && !buttonBWasPressed) {
                     if (count > 0) count--;
                     buttonBWasPressed = true;
                 }
                 if (!buttonBState) buttonBWasPressed = false;
 
+                // カウントリセット
                 if (buttonCState && !buttonCWasPressed) {
                     count = 0;
                     buttonCWasPressed = true;
                 }
                 if (!buttonCState) buttonCWasPressed = false;
 
-                if (count >= targetCount) {
-                    digitalWrite(ledPin, HIGH);
+                // LED1: カウントが1, 2, 3のとき点灯
+                if (count >= 1 && count <= 3) {
+                digitalWrite(led1Pin, HIGH);
                 } else {
-                    digitalWrite(ledPin, LOW);
+                digitalWrite(led1Pin, LOW);
                 }
 
-                delay(20);
+                // LED2: カウントが2, 3のとき点灯
+                if (count == 2 || count == 3) {
+                digitalWrite(led2Pin, HIGH);
+                } else {
+                digitalWrite(led2Pin, LOW);
                 }
-                </code></pre>
+
+                // LED3: カウントが3のときだけ点灯
+                if (count == 3) {
+                digitalWrite(led3Pin, HIGH);
+                } else {
+                digitalWrite(led3Pin, LOW);
+                }
+                }
+
+            </code></pre>
         </div>
         <p>②LED応用回路その1</p>
         <div class="caption-box">
