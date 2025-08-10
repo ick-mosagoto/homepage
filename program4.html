@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>プログラムページ</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>①ボタンを押すとLEDが順番に光る回路</h1>
+        <div class="caption-box">
+            <pre><code>
+                // ====== モーターAのピン設定 ======
+                #define ENA 5
+                #define DIRA1 3
+                #define DIRB1 4
+
+                // ====== モーターBのピン設定 ======
+                #define ENB 6
+                #define DIRA2 8
+                #define DIRB2 9
+
+                // ====== ボタン設定 ======
+                // モーターA
+                #define BTN_DIR_A 7  // 方向切替
+                #define BTN_PWR_A 10 // ON/OFF切替
+                // モーターB
+                #define BTN_DIR_B 11 // 方向切替
+                #define BTN_PWR_B 12 // ON/OFF切替
+
+                // ====== 状態変数 ======
+                bool motorOnA = false;
+                bool forwardA = true;
+                bool motorOnB = false;
+                bool forwardB = true;
+
+                int motorSpeed = 200; // 速度（0〜255）
+
+                void setup() {
+                // モーターA
+                pinMode(ENA, OUTPUT);
+                pinMode(DIRA1, OUTPUT);
+                pinMode(DIRB1, OUTPUT);
+
+                // モーターB
+                pinMode(ENB, OUTPUT);
+                pinMode(DIRA2, OUTPUT);
+                pinMode(DIRB2, OUTPUT);
+
+                // ボタン
+                pinMode(BTN_DIR_A, INPUT_PULLUP);
+                pinMode(BTN_PWR_A, INPUT_PULLUP);
+                pinMode(BTN_DIR_B, INPUT_PULLUP);
+                pinMode(BTN_PWR_B, INPUT_PULLUP);
+
+                Serial.begin(9600);
+                }
+
+                void loop() {
+                // ==== モーターA ====
+                if (digitalRead(BTN_DIR_A) == LOW) {
+                    forwardA = !forwardA;
+                    delay(300);
+                }
+                if (digitalRead(BTN_PWR_A) == LOW) {
+                    motorOnA = !motorOnA;
+                    delay(300);
+                }
+
+                // ==== モーターB ====
+                if (digitalRead(BTN_DIR_B) == LOW) {
+                    forwardB = !forwardB;
+                    delay(300);
+                }
+                if (digitalRead(BTN_PWR_B) == LOW) {
+                    motorOnB = !motorOnB;
+                    delay(300);
+                }
+
+                // ==== モーターA制御 ====
+                if (motorOnA) {
+                    if (forwardA) {
+                    digitalWrite(DIRA1, HIGH);
+                    digitalWrite(DIRB1, LOW);
+                    } else {
+                    digitalWrite(DIRA1, LOW);
+                    digitalWrite(DIRB1, HIGH);
+                    }
+                    analogWrite(ENA, motorSpeed);
+                } else {
+                    analogWrite(ENA, 0);
+                }
+
+                // ==== モーターB制御 ====
+                if (motorOnB) {
+                    if (forwardB) {
+                    digitalWrite(DIRA2, HIGH);
+                    digitalWrite(DIRB2, LOW);
+                    } else {
+                    digitalWrite(DIRA2, LOW);
+                    digitalWrite(DIRB2, HIGH);
+                    }
+                    analogWrite(ENB, motorSpeed);
+                } else {
+                    analogWrite(ENB, 0);
+                }
+                }
+
+            </code></pre>
+        </div>
+
+        <button onclick="location.href='app.html'">戻る</button>
+    </body>
+</html>
