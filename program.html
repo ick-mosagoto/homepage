@@ -173,6 +173,175 @@
 
             </code></pre>
         </div>
+
+        <p>③スイッチを押すとドレミの音が出る回路</p>
+        <div class="caption-box">
+            <pre><code>
+                #define TONE_USE_INT
+                #define TONE_PITCH 440
+                #include <TonePitch.h>
+
+                //スイッチのピン番号
+                #define SW_C4 2   //ド
+                #define SW_D4 3   //レ
+                #define SW_E4 4   //ミ
+                #define SW_F4 5   //ファ
+                #define SW_G4 6   //ソ
+                #define SW_A4 7   //ラ
+                #define SW_B4 8   //シ
+                #define SW_C5 9   //（高い）ド
+
+                #define BUZZ_PIN 10 //ブザーのピン
+
+                void setup() {
+                pinMode( SW_C4, INPUT_PULLUP );    //入力ピンに設定
+                pinMode( SW_D4, INPUT_PULLUP );    //入力ピンに設定
+                pinMode( SW_E4, INPUT_PULLUP );    //入力ピンに設定
+                pinMode( SW_F4, INPUT_PULLUP );    //入力ピンに設定
+                pinMode( SW_G4, INPUT_PULLUP );    //入力ピンに設定
+                pinMode( SW_A4, INPUT_PULLUP );    //入力ピンに設定
+                pinMode( SW_B4, INPUT_PULLUP );    //入力ピンに設定
+                pinMode( SW_C5, INPUT_PULLUP );    //入力ピンに設定
+                pinMode( BUZZ_PIN, OUTPUT );    //出力ピンに設定
+                }
+
+                void loop() {
+                if(digitalRead(SW_C4)==LOW){  //ドが押された時
+                    buzzSound(NOTE_C4);
+                }
+                else if(digitalRead(SW_D4)==LOW){ //レが押された時
+                    buzzSound(NOTE_D4);
+                }
+                else if(digitalRead(SW_E4)==LOW){ //ミが押された時
+                    buzzSound(NOTE_E4);
+                }
+                else if(digitalRead(SW_F4)==LOW){ //ファが押された時
+                    buzzSound(NOTE_F4);
+                }
+                else if(digitalRead(SW_G4)==LOW){ //ソが押された時
+                    buzzSound(NOTE_G4);
+                }
+                else if(digitalRead(SW_A4)==LOW){ //ラが押された時
+                    buzzSound(NOTE_A4);
+                }
+                else if(digitalRead(SW_B4)==LOW){ //シが押された時
+                    buzzSound(NOTE_B4);
+                }
+                else if(digitalRead(SW_C5)==LOW){ //高いドが押された時
+                    buzzSound(NOTE_C5);
+                }
+                else{   //何も押されてない時
+                    noTone(BUZZ_PIN);   //消音
+                }
+                }
+
+                //音を鳴らす関数
+                void buzzSound(int frequency){
+                tone(BUZZ_PIN, frequency);  //音を鳴らす
+                delay(50);
+                }
+            </code></pre>
+        </div>
+        <p>④２つのモーターを制御する回路</p>
+        <div class="caption-box">
+            <pre><code>
+                // ====== モーターAのピン設定 ======
+                #define ENA 5
+                #define DIRA1 3
+                #define DIRB1 4
+
+                // ====== モーターBのピン設定 ======
+                #define ENB 6
+                #define DIRA2 8
+                #define DIRB2 9
+
+                // ====== ボタン設定 ======
+                // モーターA
+                #define BTN_DIR_A 7  // 方向切替
+                #define BTN_PWR_A 10 // ON/OFF切替
+                // モーターB
+                #define BTN_DIR_B 11 // 方向切替
+                #define BTN_PWR_B 12 // ON/OFF切替
+
+                // ====== 状態変数 ======
+                bool motorOnA = false;
+                bool forwardA = true;
+                bool motorOnB = false;
+                bool forwardB = true;
+
+                int motorSpeed = 200; // 速度（0〜255）
+
+                void setup() {
+                // モーターA
+                pinMode(ENA, OUTPUT);
+                pinMode(DIRA1, OUTPUT);
+                pinMode(DIRB1, OUTPUT);
+
+                // モーターB
+                pinMode(ENB, OUTPUT);
+                pinMode(DIRA2, OUTPUT);
+                pinMode(DIRB2, OUTPUT);
+
+                // ボタン
+                pinMode(BTN_DIR_A, INPUT_PULLUP);
+                pinMode(BTN_PWR_A, INPUT_PULLUP);
+                pinMode(BTN_DIR_B, INPUT_PULLUP);
+                pinMode(BTN_PWR_B, INPUT_PULLUP);
+
+                Serial.begin(9600);
+                }
+
+                void loop() {
+                // ==== モーターA ====
+                if (digitalRead(BTN_DIR_A) == LOW) {
+                    forwardA = !forwardA;
+                    delay(300);
+                }
+                if (digitalRead(BTN_PWR_A) == LOW) {
+                    motorOnA = !motorOnA;
+                    delay(300);
+                }
+
+                // ==== モーターB ====
+                if (digitalRead(BTN_DIR_B) == LOW) {
+                    forwardB = !forwardB;
+                    delay(300);
+                }
+                if (digitalRead(BTN_PWR_B) == LOW) {
+                    motorOnB = !motorOnB;
+                    delay(300);
+                }
+
+                // ==== モーターA制御 ====
+                if (motorOnA) {
+                    if (forwardA) {
+                    digitalWrite(DIRA1, HIGH);
+                    digitalWrite(DIRB1, LOW);
+                    } else {
+                    digitalWrite(DIRA1, LOW);
+                    digitalWrite(DIRB1, HIGH);
+                    }
+                    analogWrite(ENA, motorSpeed);
+                } else {
+                    analogWrite(ENA, 0);
+                }
+
+                // ==== モーターB制御 ====
+                if (motorOnB) {
+                    if (forwardB) {
+                    digitalWrite(DIRA2, HIGH);
+                    digitalWrite(DIRB2, LOW);
+                    } else {
+                    digitalWrite(DIRA2, LOW);
+                    digitalWrite(DIRB2, HIGH);
+                    }
+                    analogWrite(ENB, motorSpeed);
+                } else {
+                    analogWrite(ENB, 0);
+                }
+                }
+            </code></pre>
+        </div>
         <button onclick="location.href='index.html'">戻る</button>
     </body>
 </html>
