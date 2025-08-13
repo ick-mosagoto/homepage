@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>プログラムページ</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>⑤距離測定回路</h1>
+        <div class="caption-box">
+            <pre><code>
+                #include <Wire.h>
+                #include <hd44780.h>  // メインのhd44780ヘッダー
+                #include <hd44780ioClass/hd44780_I2Cexp.h> // I2CエキスパンダーI/Oクラスのヘッダー
+
+                #define ECHO_PIN 3
+                #define TRIG_PIN 4
+
+                hd44780_I2Cexp lcd; // LCDオブジェクトを宣言: エキスパンダーチップの自動検出と自動設定
+
+                void setup() {
+                // LCDを初期化
+                lcd.begin(16, 2);
+                lcd.backlight();
+                lcd.print("Distance:");
+
+                // HC-SR04センサーを初期化
+                pinMode(ECHO_PIN, INPUT);
+                pinMode(TRIG_PIN, OUTPUT);
+
+                // デバッグ用シリアル通信を初期化
+                Serial.begin(9600);
+                Serial.println("Ultrasonic sensor:");
+                }
+
+                void loop() {
+                float distance = readDistance();  // センサーデータを読み取って距離を取得する関数を呼び出し
+                lcd.setCursor(0, 1);
+                lcd.print("                "); // 前の値をクリア
+                lcd.setCursor(0, 1);
+                lcd.print(distance);
+                lcd.print(" cm");
+
+                // デバッグ用シリアル出力
+                Serial.print(distance);           
+                Serial.println(" cm");            
+
+                delay(400);  // ループを繰り返す前に400ミリ秒待つ
+                }
+
+                // センサーデータを読み取って距離を計算する関数
+                float readDistance() {
+                digitalWrite(TRIG_PIN, LOW);   // クリーンなパルスを確保するためにTRIGピンをLOWに設定
+                delayMicroseconds(2);         // 2マイクロ秒待つ
+                digitalWrite(TRIG_PIN, HIGH);  // TRIGピンをHIGHにして10マイクロ秒のパルスを送信
+                delayMicroseconds(10);
+                digitalWrite(TRIG_PIN, LOW);  // TRIGピンを再びLOWに設定
+
+                // エコーピンのパルス幅を測定し、距離値を計算
+                float distance = pulseIn(ECHO_PIN, HIGH) / 58.00;  // 式: (340m/s * 1us) / 2
+                return distance;
+                }
+            </code></pre>
+
+            <button onclick="location.href='app.html'">戻る</button>
+        </div>
+    </body>
