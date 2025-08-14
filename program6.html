@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>プログラムページ</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+     <body>
+        <h1>⑥サイコロ回路</h1>
+        <div class="caption-box">
+            <pre><code>
+                #define SEG_A 7
+                #define SEG_B 8
+                #define SEG_C 3
+                #define SEG_D 2
+                #define SEG_E 1
+                #define SEG_F 6
+                #define SEG_G 5
+                #define SEG_DP 4
+
+                #define SW_PIN 13 // スイッチ
+
+                int ran_num = 0;              // 表示する数字
+                bool rolling = false;         // ランダム表示中かどうか
+                unsigned long startTime = 0;  // ランダム表示開始時間
+
+                void setup() {
+                pinMode(SW_PIN, INPUT_PULLUP);
+
+                pinMode(SEG_A, OUTPUT);
+                pinMode(SEG_B, OUTPUT);
+                pinMode(SEG_C, OUTPUT);
+                pinMode(SEG_D, OUTPUT);
+                pinMode(SEG_E, OUTPUT);
+                pinMode(SEG_F, OUTPUT);
+                pinMode(SEG_G, OUTPUT);
+                pinMode(SEG_DP, OUTPUT);
+
+                randomSeed(analogRead(A0)); // 乱数の初期化
+                }
+
+                void loop() {
+                // スイッチが押されたらランダム開始（rolling=falseの時のみ）
+                if (digitalRead(SW_PIN) == LOW && !rolling) {
+                    rolling = true;
+                    startTime = millis();
+                }
+
+                if (rolling) {
+                    if (millis() - startTime < 1000) {
+                    // 1秒間ランダム表示
+                    ran_num = random(0, 10);
+                    ledOff();
+                    ledOn(ran_num);
+                    delay(100); // 表示の切り替え間隔
+                    } else {
+                    // 1秒経過 → 数字確定
+                    rolling = false;
+                    // 確定時の数字は最後に表示された ran_num を維持
+                    }
+                } else {
+                    // 停止時は確定数字を表示
+                    ledOff();
+                    ledOn(ran_num);
+                }
+                }
+
+                // 数字に応じてセグメントを点灯
+                void ledOn(int num) {
+                switch (num) {
+                    case 0:
+                    digitalWrite(SEG_A, HIGH);
+                    digitalWrite(SEG_B, HIGH);
+                    digitalWrite(SEG_C, HIGH);
+                    digitalWrite(SEG_D, HIGH);
+                    digitalWrite(SEG_E, HIGH);
+                    digitalWrite(SEG_F, HIGH);
+                    break;
+                    case 1:
+                    digitalWrite(SEG_B, HIGH);
+                    digitalWrite(SEG_C, HIGH);
+                    break;
+                    case 2:
+                    digitalWrite(SEG_A, HIGH);
+                    digitalWrite(SEG_B, HIGH);
+                    digitalWrite(SEG_D, HIGH);
+                    digitalWrite(SEG_E, HIGH);
+                    digitalWrite(SEG_G, HIGH);
+                    break;
+                    case 3:
+                    digitalWrite(SEG_A, HIGH);
+                    digitalWrite(SEG_B, HIGH);
+                    digitalWrite(SEG_C, HIGH);
+                    digitalWrite(SEG_D, HIGH);
+                    digitalWrite(SEG_G, HIGH);
+                    break;
+                    case 4:
+                    digitalWrite(SEG_B, HIGH);
+                    digitalWrite(SEG_C, HIGH);
+                    digitalWrite(SEG_F, HIGH);
+                    digitalWrite(SEG_G, HIGH);
+                    break;     
+                    case 5:
+                    digitalWrite(SEG_A, HIGH);
+                    digitalWrite(SEG_C, HIGH);
+                    digitalWrite(SEG_D, HIGH);
+                    digitalWrite(SEG_F, HIGH);
+                    digitalWrite(SEG_G, HIGH);
+                    break;  
+                    case 6:
+                    digitalWrite(SEG_A, HIGH);
+                    digitalWrite(SEG_C, HIGH);
+                    digitalWrite(SEG_D, HIGH);
+                    digitalWrite(SEG_E, HIGH);
+                    digitalWrite(SEG_F, HIGH);
+                    digitalWrite(SEG_G, HIGH);
+                    break;
+                    case 7:
+                    digitalWrite(SEG_A, HIGH);
+                    digitalWrite(SEG_B, HIGH);
+                    digitalWrite(SEG_C, HIGH);
+                    break;
+                    case 8:
+                    digitalWrite(SEG_A, HIGH);
+                    digitalWrite(SEG_B, HIGH);
+                    digitalWrite(SEG_C, HIGH);
+                    digitalWrite(SEG_D, HIGH);
+                    digitalWrite(SEG_E, HIGH);
+                    digitalWrite(SEG_F, HIGH);
+                    digitalWrite(SEG_G, HIGH);
+                    break;
+                    case 9:
+                    digitalWrite(SEG_A, HIGH);
+                    digitalWrite(SEG_B, HIGH);
+                    digitalWrite(SEG_C, HIGH);
+                    digitalWrite(SEG_D, HIGH);
+                    digitalWrite(SEG_F, HIGH);
+                    digitalWrite(SEG_G, HIGH);
+                    break;
+                }
+                }
+
+                // 全て消灯
+                void ledOff() {
+                digitalWrite(SEG_A, LOW);
+                digitalWrite(SEG_B, LOW);
+                digitalWrite(SEG_C, LOW);
+                digitalWrite(SEG_D, LOW);
+                digitalWrite(SEG_E, LOW);
+                digitalWrite(SEG_F, LOW);
+                digitalWrite(SEG_G, LOW);
+                digitalWrite(SEG_DP, LOW);
+                }
+            </code></pre>
+        </div>
+        <button onclick="location.href='app.html'">戻る</button>
+    </body>
+</html>
