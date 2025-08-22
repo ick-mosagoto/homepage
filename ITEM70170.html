@@ -16,107 +16,107 @@
 
             </p>使用したプログラムは以下のものを使いました
             <pre><code>
-                #include "thingProperties.h"
+            #include "thingProperties.h"
 
-                // モーターA
-                const int ENA = 7;   // PWM出力可能なピン（速度制御）
-                const int IN1 = 5;   // 方向制御
-                const int IN2 = 3;   // 方向制御
+            // モーターA
+            const int ENA = 7;   // PWM出力可能なピン（速度制御）
+            const int IN1 = 5;   // 方向制御
+            const int IN2 = 3;   // 方向制御
 
-                // モーターB
-                const int ENB = 6;   // PWM出力可能なピン（速度制御）
-                const int IN3 = 9;   // 方向制御
-                const int IN4 = 10;  // 方向制御
+            // モーターB
+            const int ENB = 6;   // PWM出力可能なピン（速度制御）
+            const int IN3 = 9;   // 方向制御
+            const int IN4 = 10;  // 方向制御
 
-                void setup() {
-                // デバッグ用
-                Serial.begin(9600);
+            void setup() {
+            // デバッグ用
+            Serial.begin(9600);
 
-                // モーターAピン
-                pinMode(ENA, OUTPUT);
-                pinMode(IN1, OUTPUT);
-                pinMode(IN2, OUTPUT);
+            // モーターAピン
+            pinMode(ENA, OUTPUT);
+            pinMode(IN1, OUTPUT);
+            pinMode(IN2, OUTPUT);
 
-                // モーターBピン
-                pinMode(ENB, OUTPUT);
-                pinMode(IN3, OUTPUT);
-                pinMode(IN4, OUTPUT);
+            // モーターBピン
+            pinMode(ENB, OUTPUT);
+            pinMode(IN3, OUTPUT);
+            pinMode(IN4, OUTPUT);
 
-                // Arduino Cloud 初期化
-                initProperties();
-                ArduinoCloud.begin(ArduinoIoTPreferredConnection);
+            // Arduino Cloud 初期化
+            initProperties();
+            ArduinoCloud.begin(ArduinoIoTPreferredConnection);
 
-                setDebugMessageLevel(2);
-                ArduinoCloud.printDebugInfo();
+            setDebugMessageLevel(2);
+            ArduinoCloud.printDebugInfo();
+            }
+
+            void loop() {
+            ArduinoCloud.update();
+            // 必要なら追加の処理をここに
+            }
+
+            // ========== モーター制御関数 ==========
+
+            // モーターAの更新
+            void updateMotorA() {
+            if (motorAState) { // ON
+                if (motorADirection) { // 正転
+                digitalWrite(IN1, HIGH);
+                digitalWrite(IN2, LOW);
+                } else { // 逆転
+                digitalWrite(IN1, LOW);
+                digitalWrite(IN2, HIGH);
                 }
+                analogWrite(ENA, motorSpeed);
+            } else {
+                analogWrite(ENA, 0); // 停止
+            }
+            }
 
-                void loop() {
-                ArduinoCloud.update();
-                // 必要なら追加の処理をここに
+            // モーターBの更新
+            void updateMotorB() {
+            if (motorBState) { // ON
+                if (motorBDirection) { // 正転
+                digitalWrite(IN3, HIGH);
+                digitalWrite(IN4, LOW);
+                } else { // 逆転
+                digitalWrite(IN3, LOW);
+                digitalWrite(IN4, HIGH);
                 }
+                analogWrite(ENB, motorSpeed);
+            } else {
+                analogWrite(ENB, 0); // 停止
+            }
+            }
 
-                // ========== モーター制御関数 ==========
+            // ========== Arduino Cloud のコールバック関数 ==========
 
-                // モーターAの更新
-                void updateMotorA() {
-                if (motorAState) { // ON
-                    if (motorADirection) { // 正転
-                    digitalWrite(IN1, HIGH);
-                    digitalWrite(IN2, LOW);
-                    } else { // 逆転
-                    digitalWrite(IN1, LOW);
-                    digitalWrite(IN2, HIGH);
-                    }
-                    analogWrite(ENA, motorSpeed);
-                } else {
-                    analogWrite(ENA, 0); // 停止
-                }
-                }
+            void onMotorADirectionChange() {
+            Serial.println("Motor A Direction changed");
+            updateMotorA();
+            }
 
-                // モーターBの更新
-                void updateMotorB() {
-                if (motorBState) { // ON
-                    if (motorBDirection) { // 正転
-                    digitalWrite(IN3, HIGH);
-                    digitalWrite(IN4, LOW);
-                    } else { // 逆転
-                    digitalWrite(IN3, LOW);
-                    digitalWrite(IN4, HIGH);
-                    }
-                    analogWrite(ENB, motorSpeed);
-                } else {
-                    analogWrite(ENB, 0); // 停止
-                }
-                }
+            void onMotorAStateChange() {
+            Serial.println("Motor A State changed");
+            updateMotorA();
+            }
 
-                // ========== Arduino Cloud のコールバック関数 ==========
+            void onMotorBDirectionChange() {
+            Serial.println("Motor B Direction changed");
+            updateMotorB();
+            }
 
-                void onMotorADirectionChange() {
-                Serial.println("Motor A Direction changed");
-                updateMotorA();
-                }
+            void onMotorBStateChange() {
+            Serial.println("Motor B State changed");
+            updateMotorB();
+            }
 
-                void onMotorAStateChange() {
-                Serial.println("Motor A State changed");
-                updateMotorA();
-                }
-
-                void onMotorBDirectionChange() {
-                Serial.println("Motor B Direction changed");
-                updateMotorB();
-                }
-
-                void onMotorBStateChange() {
-                Serial.println("Motor B State changed");
-                updateMotorB();
-                }
-
-                void onMotorSpeedChange() {
-                Serial.print("Motor Speed changed: ");
-                Serial.println(motorSpeed);
-                updateMotorA();
-                updateMotorB();
-                }
+            void onMotorSpeedChange() {
+            Serial.print("Motor Speed changed: ");
+            Serial.println(motorSpeed);
+            updateMotorA();
+            updateMotorB();
+            }
             </code></pre>
         </div>
         <button onclick="location.href='app.html'">戻る</button>
