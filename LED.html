@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>プログラムページ</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>①ボタンを押すとLEDが順番に光る回路</h1>
+        <div class="caption-box">
+            <pre><code>
+                #include <Adafruit_NeoPixel.h>
+
+                // ==== LED設定 ====
+                // 系統A: LED #1〜20（カウント用）, #21〜30（演出用） → D6
+                // 系統B: LED #31〜50（カウント用）, #51〜60（演出用） → D7
+                #define LED_PIN_A 6
+                #define LED_PIN_B 7
+                #define LED_COUNT_A 30
+                #define LED_COUNT_B 30
+
+                Adafruit_NeoPixel stripA(LED_COUNT_A, LED_PIN_A, NEO_GRB + NEO_KHZ800);
+                Adafruit_NeoPixel stripB(LED_COUNT_B, LED_PIN_B, NEO_GRB + NEO_KHZ800);
+
+                // ==== ボタン設定 ====
+                #define BUTTON_A 2 // 系統Aカウント
+                #define BUTTON_B 3 // 系統Bカウント
+                #define BUTTON_RESET 4 // リセット
+
+                // カウント数
+                int countA = 0;
+                int countB = 0;
+
+                // 勝敗状態
+                bool gameOver = false;
+                int winner = 0; // 0=なし, 1=A, 2=B, 3=同時
+
+                // 7色の定義（RGB値）
+                uint32_t colors[7];
+
+                // ==== セットアップ ====
+                void setup() {
+                stripA.begin();
+                stripB.begin();
+                stripA.show();
+                stripB.show();
+
+                pinMode(BUTTON_A, INPUT_PULLUP);
+                pinMode(BUTTON_B, INPUT_PULLUP);
+                pinMode(BUTTON_RESET, INPUT_PULLUP);
+
+                colors[0] = stripA.Color(255, 0, 0);     // 赤
+                colors[1] = stripA.Color(255, 127, 0);   // オレンジ
+                colors[2] = stripA.Color(255, 255, 0);   // 黄
+                colors[3] = stripA.Color(0, 255, 0);     // 緑
+                colors[4] = stripA.Color(0, 255, 255);   // 水色
+                colors[5] = stripA.Color(0, 0, 255);     // 青
+                colors[6] = stripA.Color(139, 0, 255);   // 紫
+
+                randomSeed(analogRead(A0)); // ランダム初期化
+                }
+
+                // ==== メインループ ====
+                void loop() {
+                if (!gameOver) {
+                    if (buttonPressed(BUTTON_A) && countA < 20) {
+                    countA++;
+                    updateCountLED(stripA, 0, countA);
+                    checkWinner();
+                    }
+                    if (buttonPressed(BUTTON_B) && countB < 20) {
+                    countB++;
+                    updateCountLED(stripB, 0, countB);
+                    checkWinner();
+                    }
+                } else {
+                    // 勝敗確定後はキラキラ演出
+                    if (winner == 1) {
+                    sparkleEffect(stripA, 20, 29); // 系統A演出LED
+                    } else if (winner == 2) {
+                    sparkleEffect(stripB, 20, 29); // 系統B演出LED
+                    } else if (winner == 3) {
+                    sparkleEffect(stripA, 20, 29);
+                    sparkleEffect(stripB, 20, 29);
+                    }
+
+                    // リセットボタン監視
+                    if (buttonPressed(BUTTON_RESET)) {
+                    resetGame();
+                    }
+                }
+                }
+
+                // ==== ボタン判定（チャタリング防止） ====
+                bool buttonPressed(int pin) {
+                if (digitalRead(pin) == LOW) {
+                    delay(20);
+                    if (digitalRead(pin) == LOW) {
+                    while (digitalRead(pin) == LOW); // 離すまで待つ
+                    return true;
+                    }
+                }
+                return false;
+                }
+
+                // ==== カウントLED更新 ====
+                void updateCountLED(Adafruit_NeoPixel &strip, int startLED, int count) {
+                for (int i = 0; i < 20; i++) {
+                    if (i < count) {
+                    strip.setPixelColor(startLED + i, strip.Color(0, 255, 0)); // 緑
+                    } else {
+                    strip.setPixelColor(startLED + i, 0); // 消灯
+                    }
+                }
+                strip.show();
+                }
+
+                // ==== 勝敗判定 ====
+                void checkWinner() {
+                if (countA >= 20 && countB >= 20) {
+                    gameOver = true;
+                    winner = 3; // 同時ゴール
+                } else if (countA >= 20) {
+                    gameOver = true;
+                    winner = 1;
+                } else if (countB >= 20) {
+                    gameOver = true;
+                    winner = 2;
+                }
+                }
+
+                // ==== キラキラ演出 ====
+                void sparkleEffect(Adafruit_NeoPixel &strip, int startLED, int endLED) {
+                // 消灯してからランダムに点灯
+                for (int i = startLED; i <= endLED; i++) {
+                    strip.setPixelColor(i, 0);
+                }
+                for (int j = 0; j < 3; j++) { // 3個だけランダムに光らせる
+                    int pixel = random(startLED, endLED + 1);
+                    uint32_t color = colors[random(0, 7)];
+                    strip.setPixelColor(pixel, color);
+                }
+                strip.show();
+                delay(100);
+                }
+
+                // ==== ゲームリセット ====
+                void resetGame() {
+                countA = 0;
+                countB = 0;
+                gameOver = false;
+                winner = 0;
+                stripA.clear();
+                stripB.clear();
+                stripA.show();
+                stripB.show();
+                }
+            </code></pre>
+        </div>
+        <button onclick="location.href='app.html'">戻る</button>
+    </body>
+</html>
