@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>プログラムページ</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>⑦LED瞬発力対決</h1>
+        <div class="caption-box">
+            <pre><code>
+                const int button1 = 2;
+                const int button2 = 3;
+                const int startButton = 4;   // ← 試合開始ボタン
+                const int resetButton = 5;   // ← リセットボタン
+                const int led1 = 8;
+                const int led2 = 9;
+                const int buzzer = 10;
+                const int startLed = 11;  // 開始を知らせるLED
+
+                int score1 = 0;
+                int score2 = 0;
+
+                bool gameActive = false;
+                bool gameFinished = false;
+                bool waitingStart = true;   // ← 試合開始待ち状態
+
+                void setup() {
+                pinMode(button1, INPUT_PULLUP);
+                pinMode(button2, INPUT_PULLUP);
+                pinMode(startButton, INPUT_PULLUP);
+                pinMode(resetButton, INPUT_PULLUP);
+                pinMode(led1, OUTPUT);
+                pinMode(led2, OUTPUT);
+                pinMode(buzzer, OUTPUT);
+                pinMode(startLed, OUTPUT);
+
+                Serial.begin(9600);
+                randomSeed(analogRead(A0));
+
+                Serial.println("=== Ready! Press Start to begin ===");
+                }
+
+                void loop() {
+                // 試合開始ボタンが押されたらラウンド開始
+                if (waitingStart && digitalRead(startButton) == LOW && !gameFinished) {
+                    delay(200); // チャタリング防止
+                    waitingStart = false;
+                    startRound();
+                }
+
+                // リセットボタンで全体リセット
+                if (digitalRead(resetButton) == LOW) {
+                    delay(200); 
+                    resetGame();
+                }
+
+                // 試合中の処理
+                if (gameActive && !gameFinished) {
+                    if (digitalRead(button1) == LOW) {
+                    score1++;
+                    checkWinner(1);
+                    } 
+                    else if (digitalRead(button2) == LOW) {
+                    score2++;
+                    checkWinner(2);
+                    }
+                }
+                }
+
+                void startRound() {
+                digitalWrite(led1, LOW);
+                digitalWrite(led2, LOW);
+                noTone(buzzer);
+
+                if (!gameFinished) {
+                    int duration = random(1000, 4000); // ランダム点灯 1〜4秒
+                    digitalWrite(startLed, HIGH);
+                    delay(duration);
+                    digitalWrite(startLed, LOW);
+                    gameActive = true;
+                    Serial.println("=== Round Started! ===");
+                }
+                }
+
+                void checkWinner(int player) {
+                gameActive = false;
+
+                if (player == 1) {
+                    winnerEffect(led1, 1000);
+                    if (score1 >= 5) declareVictory(1);
+                } else {
+                    winnerEffect(led2, 1500);
+                    if (score2 >= 5) declareVictory(2);
+                }
+
+                printScores();
+
+                if (!gameFinished) {
+                    waitingStart = true;  // 次のラウンドを開始ボタン待ちにする
+                    Serial.println("Press Start for next round!");
+                }
+                }
+
+                void winnerEffect(int ledPin, int toneHz) {
+                for (int i = 0; i < 3; i++) {
+                    digitalWrite(ledPin, HIGH);
+                    tone(buzzer, toneHz, 200);
+                    delay(250);
+                    digitalWrite(ledPin, LOW);
+                    delay(250);
+                }
+                }
+
+                void declareVictory(int player) {
+                gameFinished = true;
+                int ledPin = (player == 1) ? led1 : led2;
+                int toneHz = (player == 1) ? 1000 : 1500;
+
+                // 勝利演出
+                for (int i = 0; i < 5; i++) {
+                    digitalWrite(ledPin, HIGH);
+                    tone(buzzer, toneHz, 400);
+                    delay(400);
+                    digitalWrite(ledPin, LOW);
+                    delay(400);
+                }
+                tone(buzzer, 2000, 1000); // 勝利ファンファーレ
+
+                Serial.print("=== Player ");
+                Serial.print(player);
+                Serial.println(" Wins the Game! ===");
+                }
+
+                void resetGame() {
+                score1 = 0;
+                score2 = 0;
+                gameActive = false;
+                gameFinished = false;
+                waitingStart = true;
+
+                digitalWrite(led1, LOW);
+                digitalWrite(led2, LOW);
+                noTone(buzzer);
+
+                Serial.println("=== Game Reset ===");
+                Serial.println("Press Start to begin!");
+                }
+
+                void printScores() {
+                Serial.print("Player1: ");
+                Serial.print(score1);
+                Serial.print(" | Player2: ");
+                Serial.println(score2);
+                }
+
+
+            </code></pre>
+        </div>
+        <button onclick="location.href='app.html'">戻る</button>
+    </body>
+</html>
