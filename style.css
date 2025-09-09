@@ -56,3 +56,8 @@ pre code {
     overflow-x: auto;          /* 横スクロール可 */
     font-family: Consolas, Monaco, monospace; /* 等幅フォント */
 }
+
+ul {
+    color: black;
+    background-color: white;
+}
