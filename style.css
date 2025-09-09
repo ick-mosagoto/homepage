@@ -60,9 +60,9 @@ pre code {
 ul {
     color: black;
     background-color: white;
-    width: 80%;           /* 幅を指定（例: 80%） */
-    margin: 10px auto;    /* 上下余白＋中央寄せ */
-    padding: 12px;        /* 内側余白 */
-    border-radius: 8px;   /* 角丸 */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* 影（任意） */
+    width: 80%;
+    margin: 10px 0;        /* 上下余白のみ（左寄せ） */
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
